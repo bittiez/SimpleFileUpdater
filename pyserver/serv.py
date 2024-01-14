@@ -15,6 +15,7 @@ class FServer(BaseHTTPRequestHandler):
             if Path(file).is_file():
                 self.send_response(200)
                 self.send_header("Content-type", "application/octet-stream")
+                self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
                 with open(file, 'rb') as fileh:
                     self.wfile.write(fileh.read())
@@ -25,6 +26,7 @@ class FServer(BaseHTTPRequestHandler):
 
         self.send_response(200)
         self.send_header("Content-type", "application/json")
+        self.send_header('Access-Control-Allow-Origin', '*')
         self.end_headers()
         self.wfile.write(self.getJson())
         
