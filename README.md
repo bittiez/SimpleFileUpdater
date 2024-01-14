@@ -1,6 +1,10 @@
 # SimpleFileUpdater
  This is a simple python file server and dotnet client to check md5 against server files and download if different
 
+# Building
+Clone the repo  
+Run in terminal/command prompt/powershell etc: `dotnet build -c Release`  
+
 # Server
 On your server make sure you have python 3.11+ installed  
 Simply run python serv.py, it will create a `files/` folder where you will place all files you want the client to be able to check/download.  
