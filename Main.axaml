@@ -29,9 +29,12 @@
             </StackPanel>
 
             <Grid Grid.Row="1">
-                <ProgressBar Grid.Row="0" IsVisible="True" Minimum="0" Maximum="100" Value="{Binding Progress}" HorizontalAlignment="Center"
-                             Height="40" Width="600" MinWidth="600" MinHeight="40"/>
-                <TextBlock Grid.Row="0" HorizontalAlignment="Center" Text="{Binding ProgressText}" ZIndex="1"/>
+                <ProgressBar Grid.Row="0" IsVisible="True" Minimum="0" Maximum="100" Value="{Binding Progress}"
+                             HorizontalAlignment="Center"
+                             Height="40" Width="600" MinWidth="600" MinHeight="30"
+                             Background="{x:Static vm:Settings.ProgressBarBackground}"
+                             Foreground="{x:Static vm:Settings.ProgressBarForeground}" Opacity="0.75" />
+                <TextBlock Grid.Row="0" HorizontalAlignment="Center" Text="{Binding ProgressText}" Foreground="{x:Static vm:Settings.DefaultTextColor}" ZIndex="1" />
             </Grid>
         </Grid>
     </Canvas>

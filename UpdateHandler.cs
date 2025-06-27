@@ -23,6 +23,7 @@ public static class UpdateHandler
     private static DateTime lastUiUpdateTime = DateTime.MinValue;
     private static readonly CancellationTokenSource cancellationSource = new();
     private static readonly CancellationToken cancellationToken = cancellationSource.Token;
+
     public static async Task HandleUpdates(MainViewModel dataModel)
     {
         client.Timeout = TimeSpan.FromSeconds(5); //Initial connection
@@ -36,7 +37,7 @@ public static class UpdateHandler
         await StartDownloading();
 
         data.Progress = 100;
-        data.ProgressText = "Done, you're all up to date!";
+        data.ProgressText = Settings.Finished;
     }
 
     public static void Cancel()
@@ -46,12 +47,12 @@ public static class UpdateHandler
 
     private static async Task<bool> GetFileList()
     {
-        data.ProgressText = "Requesting file list from server..";
+        data.ProgressText = Settings.ReqFileList;
         var response = await client.GetAsync(new Uri(Settings.UpdateUrl));
 
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
-            data.ErrorMessage = "Unable to connect to server.";
+            data.ErrorMessage = Settings.ConError;
             return false;
         }
 
@@ -61,7 +62,7 @@ public static class UpdateHandler
 
             if (string.IsNullOrEmpty(json))
             {
-                data.ErrorMessage = "Got bad data from server, please try again later.";
+                data.ErrorMessage = Settings.BadData;
                 return false;
             }
 
@@ -79,7 +80,7 @@ public static class UpdateHandler
         }
         catch (Exception e)
         {
-            data.ErrorMessage = "An unknown error occured, please try again later.";
+            data.ErrorMessage = Settings.UnknownError;
             Console.WriteLine(e.Message);
             return false;
         }
@@ -91,8 +92,10 @@ public static class UpdateHandler
 
         currentMaxProgress = remoteFileListQueue.Count;
         Dispatcher.UIThread.Post(() =>
-            data.ProgressText = $"Comparing your files to the server.. (0/{currentMaxProgress})");
-        Dispatcher.UIThread.Post(() => data.Progress = 0);
+        {
+            data.Progress = 0;
+            data.ProgressText = string.Format(Settings.ComparingFiles, "0", currentMaxProgress);
+        });
 
         var tasks = new List<Task>();
         for (int i = 0; i < WORKER_COUNT; i++)
@@ -112,7 +115,7 @@ public static class UpdateHandler
         Dispatcher.UIThread.Post(() =>
         {
             data.Progress = 0;
-            data.ProgressText = $"Downloading files from the server.. (0/{currentMaxProgress})";
+            data.ProgressText = string.Format(Settings.DownloadingFiles, "0", currentMaxProgress, "0");
         });
 
         var tasks = new List<Task>();
@@ -146,8 +149,8 @@ public static class UpdateHandler
             Dispatcher.UIThread.Post(() =>
             {
                 data.Progress = ((currentMaxProgress - remoteFileListQueue.Count) / currentMaxProgress) * 100;
-                data.ProgressText =
-                    $"Comparing your files to the server.. ({currentMaxProgress - remoteFileListQueue.Count}/{currentMaxProgress})";
+                data.ProgressText = string.Format(Settings.ComparingFiles,
+                    currentMaxProgress - remoteFileListQueue.Count, currentMaxProgress);
             });
         }
     }
@@ -178,7 +181,7 @@ public static class UpdateHandler
                 {
                     if (cancellationToken.IsCancellationRequested)
                         return;
-                    
+
                     await fileStream.WriteAsync(buffer, 0, bytesRead);
                     fileBytesDownloaded += bytesRead;
 
@@ -207,8 +210,8 @@ public static class UpdateHandler
                             double progress =
                                 ((currentMaxProgress - downloadQueue.Count) / (double)currentMaxProgress) * 100;
                             data.Progress = progress;
-                            data.ProgressText =
-                                $"Downloading files from the server.. ({currentMaxProgress - downloadQueue.Count}/{currentMaxProgress}) — Avg speed: {speedStr}";
+                            data.ProgressText = string.Format(Settings.DownloadingFiles,
+                                currentMaxProgress - downloadQueue.Count, currentMaxProgress, speedStr);
                         });
 
                         sw.Restart(); // reset stopwatch for next chunk interval
@@ -224,8 +227,7 @@ public static class UpdateHandler
                 {
                     var fname = file.name;
                     Console.WriteLine($"Failed to download [{file.name}] after 5 attempts, skipping..");
-                    Dispatcher.UIThread.Post(() =>
-                        data.ErrorMessage = $"Failed to download [{fname}] after 5 attempts, skipping..");
+                    Dispatcher.UIThread.Post(() => data.ErrorMessage = string.Format(Settings.FileFailedError, fname));
                     continue;
                 }
 
@@ -243,13 +245,13 @@ public static class UpdateHandler
                     : 0;
             }
 
-            string finalSpeedStr = $"{(finalAvgSpeed / (1024 * 1024)):F2} MB/s";
+            string finalSpeedStr = $"{(finalAvgSpeed / 1024):F2} KB/s";
             Dispatcher.UIThread.Post(() =>
             {
                 double progress = ((currentMaxProgress - downloadQueue.Count) / (double)currentMaxProgress) * 100;
                 data.Progress = progress;
-                data.ProgressText =
-                    $"Downloading files from the server.. ({currentMaxProgress - downloadQueue.Count}/{currentMaxProgress}) — Avg speed: {finalSpeedStr}";
+                data.ProgressText = string.Format(Settings.DownloadingFiles,
+                    currentMaxProgress - downloadQueue.Count, currentMaxProgress, finalSpeedStr);
             });
         }
     }
