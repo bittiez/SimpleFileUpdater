@@ -1,0 +1,38 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        Width="800" Height="450" CanResize="False"
+        xmlns:vm="using:FileUpdaterClient" Background="#313131"
+        x:Class="FileUpdaterClient.Main" x:DataType="vm:MainViewModel">
+    <Canvas>
+        <Image Source="avares://FileUpdaterClient/resources/background.png" Width="800" Height="450"
+               Stretch="UniformToFill" Opacity="0.75" />
+        <Grid ColumnDefinitions="*" RowDefinitions="*, *" Canvas.Top="0" Canvas.Left="0" Width="800" Height="450">
+
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="10" Width="800">
+                <TextBlock Text="{Binding Title}"
+                           FontSize="28"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center"
+                           Foreground="{Binding TitleColor}" />
+                <TextBlock Text="{Binding Subtitle}"
+                           FontSize="18"
+                           HorizontalAlignment="Center"
+                           Foreground="{Binding SubtitleColor}" />
+                <TextBlock Text="{Binding ErrorMessage}"
+                           FontSize="18"
+                           HorizontalAlignment="Center"
+                           Foreground="Red"
+                           Background="#212121" />
+            </StackPanel>
+
+            <Grid Grid.Row="1">
+                <ProgressBar Grid.Row="0" IsVisible="True" Minimum="0" Maximum="100" Value="{Binding Progress}" HorizontalAlignment="Center"
+                             Height="40" Width="600" MinWidth="600" MinHeight="40"/>
+                <TextBlock Grid.Row="0" HorizontalAlignment="Center" Text="{Binding ProgressText}" ZIndex="1"/>
+            </Grid>
+        </Grid>
+    </Canvas>
+</Window>
