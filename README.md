@@ -3,6 +3,10 @@ This is a simple python file server and dotnet client to check md5 against serve
 - This is intended for servers to provide an easy way for players to stay up to date with their files, only downloading files the player needs, instead of all of them in a zip.
 - This is customizable to your needs; you can change art, text, etc.
 
+![image](https://github.com/user-attachments/assets/19862851-c269-4c8e-a442-71060d5fbc2b)  
+![image](https://github.com/user-attachments/assets/ef2e7725-02b8-498d-a93d-449ce535e062)  
+
+
 ## Building and Customizing the client
 1. Clone the repo  
 2. Change `resources/background.png` to your own background. 800x450 in size.
