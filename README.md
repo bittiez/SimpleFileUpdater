@@ -16,10 +16,11 @@ This is a simple python file server and dotnet client to check md5 against serve
 
 ### Build information
 - This is cross platform, to build on other platforms use:
-- Linux: `dotnet build -c Release -r linux-x64`
-- MacOS: `dotnet build -c Release -r osx-x64` *May need to be ran on a Mac*
-- Windows: `dotnet build -c Release -r win-x64`
+- Linux: `dotnet publish -c Release -r linux-x64`
+- MacOS: `dotnet publish -c Release -r osx-x64` *May need to be ran on a Mac*
+- Windows: `dotnet publish -c Release -r win-x64`
 - Each platform needs it's own release.
+- The final output will be in `bin/Release/net9.0/win-x64/publish/` (These are the only files you need to distribute to players)
 
 # Server
 1. On your server make sure you have python 3.11+ installed  
