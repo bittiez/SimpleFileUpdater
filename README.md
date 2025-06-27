@@ -1,7 +1,7 @@
 # SimpleFileUpdater
 This is a simple python file server and dotnet client to check md5 against server files and download if different.  
 - This is intended for servers to provide an easy way for players to stay up to date with their files, only downloading files the player needs, instead of all of them in a zip.
-- This is customizable to your needs, you can change art, text, etc.
+- This is customizable to your needs; you can change art, text, etc.
 
 ## Building and Customizing the client
 1. Clone the repo  
@@ -21,7 +21,8 @@ This is a simple python file server and dotnet client to check md5 against serve
 1. On your server make sure you have python 3.11+ installed  
 2. Run `python3 serv.py`
 3. This will create a `files/` folder where you will place all files you want the client to be able to check/download.  
-4. When you update files, delete `jsoncache.json` so the server will generate a new one(it may take a minute depending on how large/quantity of files)  
+4. After placing your files in there, restart the server.
+4. When you update files, either restart the server or wait one hour. File cache is regenerated every hour. 
 
 # Client Info
 - After building the project, place the output files in the `same` directory you'd like the server files to be downloaded to.  
@@ -32,4 +33,4 @@ This is a simple python file server and dotnet client to check md5 against serve
 /map1.mul
 ```
 - Run `FileUpdaterClient.exe`  
-- This will check your files md5 vs the server's md5 and download any differing or non-existant files.  
+- This will check your files md5 vs the server's md5 and download any differing or non-existent files.  

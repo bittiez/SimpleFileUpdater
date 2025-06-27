@@ -3,6 +3,8 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import hashlib
 from pathlib import Path
+import threading
+import time
 
 PORT = 8080
 HOSTNAME = ""
@@ -38,7 +40,7 @@ class FServer(BaseHTTPRequestHandler):
     
         data = []
         
-        c = 0;
+        c = 0
         allFiles = self.fileList(FILESDIR)
         for file in allFiles:
             if os.path.isfile(file):
@@ -65,6 +67,28 @@ class FServer(BaseHTTPRequestHandler):
             for filename in filenames:
                     matches.append(os.path.join(root, filename))
         return matches
+    
+def regenerate_cache(interval_seconds=60*60):
+    while True:
+        data = []
+        allFiles = []
+        for root, _, filenames in os.walk(FILESDIR):
+            for filename in filenames:
+                allFiles.append(os.path.join(root, filename))
+
+        for file in allFiles:
+            if os.path.isfile(file):
+                tdata = {
+                    'name': file[len(FILESDIR):],
+                    'md5': hashlib.md5(open(file, 'rb').read()).hexdigest()
+                }
+                data.append(tdata)
+
+        result = json.dumps(data)
+        with open("jsoncache.json", "w") as f:
+            f.write(result)
+
+        time.sleep(interval_seconds)
 
 if __name__ == "__main__":      
     os.makedirs(FILESDIR, exist_ok=True)
@@ -72,9 +96,10 @@ if __name__ == "__main__":
     webServer = HTTPServer((HOSTNAME, PORT), FServer)
     print("Server started http://%s:%s" % (HOSTNAME, PORT))
     print()
-    print("Delete jsoncache.json when files have changed.")
+    print("Cache will be regenerated every hour in the background.")
 
     try:
+        threading.Thread(target=regenerate_cache, daemon=True).start()
         webServer.serve_forever()
     except KeyboardInterrupt:
         pass
