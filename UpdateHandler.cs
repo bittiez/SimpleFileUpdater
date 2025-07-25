@@ -36,8 +36,11 @@ public static class UpdateHandler
         client.Timeout = TimeSpan.FromMinutes(15); //Download timeout
         await StartDownloading();
 
-        data.Progress = 100;
-        data.ProgressText = Settings.Finished;
+        Dispatcher.UIThread.Post(() => //Ensure the final finished text is queued in case other text updates are already queued, making sure this is the last one ran.
+        {
+            data.Progress = 100;
+            data.ProgressText = Settings.Finished;
+        });
     }
 
     public static void Cancel()
