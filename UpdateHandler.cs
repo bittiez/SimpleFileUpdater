@@ -253,8 +253,11 @@ public static class UpdateHandler
             {
                 double progress = ((currentMaxProgress - downloadQueue.Count) / (double)currentMaxProgress) * 100;
                 data.Progress = progress;
-                data.ProgressText = string.Format(Settings.DownloadingFiles,
-                    currentMaxProgress - downloadQueue.Count, currentMaxProgress, finalSpeedStr);
+
+                if(progress >= 100 && downloadQueue.Count == 0)
+                    data.ProgressText = Settings.Finished;
+                else
+                    data.ProgressText = string.Format(Settings.DownloadingFiles, currentMaxProgress - downloadQueue.Count, currentMaxProgress, finalSpeedStr);
             });
         }
     }
